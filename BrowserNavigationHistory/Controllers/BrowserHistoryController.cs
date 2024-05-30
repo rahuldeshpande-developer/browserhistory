@@ -26,30 +26,22 @@ namespace BrowserNavigationHistory.Controllers
         [HttpGet("{id:int}")]
         public ActionResult<HistoryItem> GetById(int id)
         {
-            return Ok(_repository.GetById(id));
+            HistoryItem historyItem = _repository.GetById(id);
+
+            if(historyItem == null)
+            {
+                return NotFound($"Item of id = {id} does not exist.");
+            }
+
+            return Ok(historyItem);
         }
 
-        // [controller]/getbyfixedsize
+        // [controller]/batch?page=4&size=3
         [HttpGet]
-        [Route("getbyfixedsize")]
-        public ActionResult<IEnumerable<HistoryItem>> GetFixedSize()
-        {
-           return GetBySize(FIXED_SIZE);
-        }
-
-        // [controller]/getbysize?size=10
-        [HttpGet("getbysize")]
-        public ActionResult<IEnumerable<HistoryItem>> GetBySize([FromQuery(Name = "size")] int pageSize)
-        {
-            return Ok(_repository.GetByPage(1, pageSize));
-        }
-
-        // [controller]/getbypage?page=4&size=3
-        [HttpGet]
-        [Route("getbypage")]
+        [Route("batch")]
         public ActionResult<IEnumerable<HistoryItem>>
-            GetByPage([FromQuery(Name = "page")] int pageNumber,
-                    [FromQuery(Name = "size")] int pageSize)
+            GetByPage([FromQuery(Name = "page")] int pageNumber = 1,
+                    [FromQuery(Name = "size")] int pageSize = FIXED_SIZE)
         {
             using(var context = new BrowserHistoryContext())
             {
@@ -65,7 +57,7 @@ namespace BrowserNavigationHistory.Controllers
         }
 
         // [controller]/2
-        [HttpPut("{id:int}")]
+        [HttpPut]
         public ActionResult Update(HistoryItem historyItem)
         {
             var itemToUpdate = _repository.GetById(historyItem.Id);

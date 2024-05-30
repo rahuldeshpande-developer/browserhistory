@@ -75,6 +75,23 @@ public class BrowserHistoryControllerTests
     }
 
     [Fact]
+    public void Get_By_Id_Bad_Id_Returns_Not_Found()
+    {
+        // Arrange
+        var testData = TestData();
+        var repo = new Mock<IHistoryItemRepository>();
+        repo.Setup(r => r.GetById(2)).Returns(() => { return null;});
+        BrowserHistoryController controller = new BrowserHistoryController(repo.Object);
+
+        // Act
+        var actionResult = controller.GetById(2);
+
+        // Assert
+        Assert.True(actionResult.Result is NotFoundObjectResult);
+    }
+
+
+    [Fact]
     public void Bad_Id_Update_Throws_Not_Found()
     {
         // Arrange
@@ -152,6 +169,5 @@ public class BrowserHistoryControllerTests
         StatusCodeResult? statusCodeResult = result as StatusCodeResult;
         Assert.NotNull(statusCodeResult);
         Assert.Equal(204, statusCodeResult.StatusCode);
-
     }
 }

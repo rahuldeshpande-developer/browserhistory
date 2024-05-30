@@ -107,7 +107,7 @@ namespace BrowserNavigationHistory.Models
         {
             using(var context = new BrowserHistoryContext())
             {
-                context.Remove(context.HistoryItems.Single(historyItem => historyItem.Id == id));
+                context.Remove(context.HistoryItems.SingleOrDefault(historyItem => historyItem.Id == id));
                 context.SaveChanges();
             }
         }
